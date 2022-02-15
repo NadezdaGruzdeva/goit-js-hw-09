@@ -8,10 +8,10 @@ const dataDays = document.querySelector('[data-days]');
 const dataHours = document.querySelector('[data-hours]');
 const dataMinutes = document.querySelector('[data-minutes]');
 const dataSeconds = document.querySelector('[data-seconds]');
-var timerId = null;
+let timerId = null;
 startBtn.disabled = true;
 startBtn.addEventListener('click', countdown);
-let selectedDates;
+let selectedDates, startDay, startHour, startMinute, startSecond;
 let startDate = new Date();
 const options = {
   enableTime: true,
@@ -20,9 +20,16 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDate) {
     selectedDates = selectedDate;
-    // console.log(selectedDates[0]);
     console.log(selectedDates);
     let differentMs = selectedDates[0] - startDate;
+    startDay = convertMs(differentMs)['days'];
+    startHour = convertMs(differentMs)['hours'];
+    startMinute = convertMs(differentMs)['minutes'];
+    startSecond = convertMs(differentMs)['seconds'];
+    updateText(dataDays, startDay);
+    updateText(dataHours, startHour);
+    updateText(dataMinutes, startMinute);
+    updateText(dataSeconds, startSecond);
     console.log(convertMs(differentMs));
     if (differentMs < 0) {
       Notify.failure("Please choose a date in the future");
@@ -33,21 +40,25 @@ const options = {
   },
 };
 flatpickr(input, options);
-
+function updateText(dataTime, timeLabel, v) {
+  dataTime.textContent = addLeadingZero(timeLabel);
+  console.log(v)
+}
 function countdown() {
   const today = new Date();
   let differentMs = selectedDates[0] - today;
   console.log(convertMs(differentMs));
- 
+  console.log({'differentMs':differentMs})
   clearInterval(timerId);
   timerId = setInterval(timer, 1000);
   function timer() {
-    console.log({'differentMs':differentMs})
+    // console.log({'differentMs':differentMs})
     let timerValues = convertMs(differentMs);
-    dataDays.innerHTML = addLeadingZero(timerValues['days']);
-    dataHours.innerHTML = addLeadingZero(timerValues['hours']);
-    dataMinutes.innerHTML = addLeadingZero(timerValues['minutes']);
-    dataSeconds.innerHTML = addLeadingZero(timerValues['seconds']);
+
+    if((differentMs > 86399999) && (timerValues['hours'] === 23) && (timerValues['minutes'] === 59) && (timerValues['seconds'] === 59)) updateText(dataDays, timerValues['days'], 'd');
+    if((differentMs > 3599999) && (timerValues['minutes'] === 59) && (timerValues['seconds'] === 59)) updateText(dataHours, timerValues['hours'], 'h');
+    if((differentMs > 59999) && (timerValues['seconds'] === 59)) updateText(dataMinutes, timerValues['minutes'], 'm');
+    updateText(dataSeconds, timerValues['seconds'], 's');
     if (differentMs < 1000) {
       clearInterval(timerId);
     }

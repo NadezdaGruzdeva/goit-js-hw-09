@@ -7,7 +7,7 @@ const stepDelayInput = document.querySelector('input[name="step"]');
 const amountInput = document.querySelector('input[name="amount"]');
 const btnSubmit = document.querySelector('button[type="submit"]');
 btnSubmit.addEventListener('click', start);
-var timerId = null;
+let timerId = null;
 
 function createPromise(position, delay) {
   const shouldResolve = Math.random() > 0.3;
@@ -40,7 +40,7 @@ function start(evt) {
           Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`);
         });
       position--;
-      if (position == '0') { clearInterval(timerId); }
+      if (position === 0) { clearInterval(timerId); }
     }, stepDelay)
   }, delay);
 }
